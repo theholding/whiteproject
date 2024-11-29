@@ -1,0 +1,28 @@
+name: Auto Self Destruct and Deploy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  delete_file:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Delete index.html
+        run: |
+          if [ -f index.html ]; then
+            rm index.html
+            echo "File index.html deleted."
+          else
+            echo "File index.html does not exist."
+          fi
+
+      - name: Commit changes
+        run: |
+          git config --local user.name "github-actions"
+          git config --local user.email "github-actions@github.com"
+          git add index.html || true
+          git commit -m "Remove index.html file" || echo "No changes to commit"
+          git push || echo "Nothing to push"
